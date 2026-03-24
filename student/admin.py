@@ -21,3 +21,4 @@ class StudentAdmin(admin.ModelAdmin):
  'student_class', 'admission_number')
  list_filter = ('gender', 'student_class', 'section')
  readonly_fields = ('student_image',)
+

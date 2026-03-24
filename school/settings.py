@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'faculty',
     'student',
+    'home_auth',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +58,7 @@ ROOT_URLCONF = 'school.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR,'templates'],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -70,6 +71,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'school.wsgi.application'
+
 
 
 # Database
@@ -118,4 +120,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+AUTH_USER_MODEL = 'home_auth.CustomUser'
+AUTHENTICATION_BACKENDS = (
+'django.contrib.auth.backends.ModelBackend', # Backend par défaut
+)
+LOGIN_URL = '/authentication/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+
+
