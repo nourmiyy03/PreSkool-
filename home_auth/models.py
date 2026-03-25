@@ -24,12 +24,12 @@ class CustomUser(AbstractUser):
     # Set related_name to None to prevent reverse relationship creation
     groups = models.ManyToManyField(
         'auth.Group',
-        related_name='+',
+        related_name='customuser_set',
         blank=True
     )
     user_permissions = models.ManyToManyField(
         'auth.Permission',
-        related_name='+',
+        related_name='customuser_set',
         blank=True
     )
 
