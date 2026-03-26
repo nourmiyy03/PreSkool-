@@ -1,7 +1,13 @@
 from django.db import models
+
 from home_auth.models import CustomUser
 
+from django.contrib.auth import get_user_model
+
+
 # Create your models here.
+
+User = get_user_model()
 
 class Parent(models.Model):
     father_name = models.CharField(max_length=100)
@@ -19,6 +25,7 @@ class Parent(models.Model):
         return f"{self.father_name} & {self.mother_name}"
 
 class Student(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='student_profile')
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     student_id = models.CharField(max_length=20)

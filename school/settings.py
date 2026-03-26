@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     'faculty',
     'student',
     'home_auth',
+    'teachers',
+    'departments',
+    'subjects',
     'exam',
     'holidays',
 ]
@@ -130,5 +133,10 @@ AUTHENTICATION_BACKENDS = (
 )
 LOGIN_URL = '/authentication/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/'
+
+# Media files (pour les photos)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
