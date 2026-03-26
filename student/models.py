@@ -1,4 +1,5 @@
 from django.db import models
+from home_auth.models import CustomUser
 
 # Create your models here.
 
@@ -30,6 +31,13 @@ class Student(models.Model):
     section = models.CharField(max_length=10)
     student_image = models.ImageField(upload_to='students/', blank=True)
     parent = models.OneToOneField(Parent, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        CustomUser, 
+        on_delete=models.CASCADE, 
+        null=True, 
+        blank=True, 
+        related_name='student_profile'
+    )
  
 def __str__(self):
     return f"{self.first_name} {self.last_name} ({self.student_id})"

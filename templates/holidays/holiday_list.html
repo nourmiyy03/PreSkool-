@@ -1,0 +1,104 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Jours Fériés</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'student_list' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Jours Fériés</li>
+                    </ul>
+                </div>
+                <div class="col-auto text-right float-right ml-auto">
+                    <a href="{% url 'holiday_calendar' %}" class="btn btn-outline-primary mr-2">
+                        <i class="fas fa-calendar-alt"></i> Vue Calendrier
+                    </a>
+                    {% if user.is_admin %}
+                    <a href="{% url 'add_holiday' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Ajouter
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center mb-0 datatable">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Date de début</th>
+                                        <th>Date de fin</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                        {% if user.is_admin %}
+                                        <th class="text-right">Action</th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if holidays %}
+                                    {% for holiday in holidays %}
+                                    <tr>
+                                        <td>{{ holiday.name }}</td>
+                                        <td>{{ holiday.start_date|date:"d M Y" }}</td>
+                                        <td>{{ holiday.end_date|date:"d M Y" }}</td>
+                                        <td>
+                                            {% if holiday.type == 'national' %}
+                                                <span class="badge badge-primary">National</span>
+                                            {% elif holiday.type == 'religious' %}
+                                                <span class="badge badge-warning">Religieux</span>
+                                            {% else %}
+                                                <span class="badge badge-info">Spécial</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ holiday.description|truncatechars:50 }}</td>
+                                        {% if user.is_admin %}
+                                        <td class="text-right">
+                                            <div class="actions">
+                                                <a href="{% url 'edit_holiday' holiday.id %}" class="btn btn-sm bg-success-light mr-2">
+                                                    <i class="fas fa-pen"></i>
+                                                </a>
+                                                <form action="{% url 'delete_holiday' holiday.id %}" method="POST" style="display:inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm bg-danger-light" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce jour férié ?');">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="{% if user.is_admin %}6{% else %}5{% endif %}" class="text-center">
+                                            Aucun jour férié trouvé.
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/plugins/datatables/datatables.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+{% endblock %}

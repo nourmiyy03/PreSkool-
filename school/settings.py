@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'student',
     'home_auth',
     'exam',
+    'holidays',
 ]
 
 MIDDLEWARE = [

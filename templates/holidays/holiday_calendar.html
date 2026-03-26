@@ -1,0 +1,95 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Calendrier des Jours Fériés</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'student_list' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'holiday_list' %}">Jours Fériés</a></li>
+                        <li class="breadcrumb-item active">Calendrier</li>
+                    </ul>
+                </div>
+                <div class="col-auto text-right float-right ml-auto">
+                    <a href="{% url 'holiday_list' %}" class="btn btn-outline-primary mr-2">
+                        <i class="fas fa-list"></i> Vue Liste
+                    </a>
+                    {% if user.is_admin %}
+                    <a href="{% url 'add_holiday' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Ajouter
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Navigation mois -->
+                        <div class="row mb-4">
+                            <div class="col text-center">
+                                <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-chevron-left"></i> Mois précédent
+                                </a>
+                                <h3 class="d-inline-block mx-4">{{ month_name }} {{ year }}</h3>
+                                <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-outline-primary">
+                                    Mois suivant <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Calendrier -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Lundi</th>
+                                        <th>Mardi</th>
+                                        <th>Mercredi</th>
+                                        <th>Jeudi</th>
+                                        <th>Vendredi</th>
+                                        <th>Samedi</th>
+                                        <th>Dimanche</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for week in calendar %}
+                                    <tr>
+                                        {% for day in week %}
+                                        <td style="height: 100px; vertical-align: top;">
+                                            {% if day != 0 %}
+                                                <strong>{{ day }}</strong>
+                                                {% for holiday in holidays %}
+                                                    {% if holiday.start_date.day <= day and holiday.end_date.day >= day and holiday.start_date.month == month and holiday.start_date.year == year %}
+                                                        <div class="mt-2">
+                                                            <span class="badge badge-danger badge-sm">{{ holiday.name }}</span>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </td>
+                                        {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+{% endblock %}

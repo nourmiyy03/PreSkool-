@@ -1,0 +1,39 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Tableau de bord Enseignant</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'student_list' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Enseignant</li>
+                    </ul>
+                </div>
+                <div class="col-auto text-right">
+                    <span class="text-muted">Bienvenue, {{ user.username }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chalkboard-teacher" style="font-size: 48px; color: #007bff;"></i>
+                        <h4 class="mt-3">Espace Enseignant</h4>
+                        <p class="text-muted">Cette section est en cours de développement.</p>
+                        <p>Bientôt : gestion des examens, emploi du temps, et suivi des étudiants.</p>
+                        <a href="{% url 'student_list' %}" class="btn btn-primary mt-3">
+                            <i class="fas fa-arrow-left"></i> Retour à l'accueil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -33,8 +33,14 @@ def signup_view(request):
         user.save()
         login(request, user)
         messages.success(request, 'Signup successful!')
-        return redirect('student_list')  # 👈 بدل index
-
+        
+        # Redirection après inscription selon le rôle
+        if user.is_admin:
+            return redirect('admin_dashboard')
+        elif user.is_teacher:
+            return redirect('teacher_dashboard')
+        else:
+            return redirect('student_dashboard')  
     return render(request, 'authentication/register.html')
 
 
@@ -49,13 +55,16 @@ def login_view(request):
             login(request, user)
             messages.success(request, 'Login successful!')
 
-            # redirection
-            if user.is_admin:
+            # redirection selon le rôle
+            if user.is_admin or user.is_superuser:
                 return redirect('admin_dashboard')
             elif user.is_teacher:
                 return redirect('teacher_dashboard')
+            elif user.is_student:
+                return redirect('student_dashboard')  
             else:
-                return redirect('student_list')  # 👈 fix مهم
+                # Par défaut, rediriger vers student_dashboard
+                return redirect('student_dashboard')
 
         else:
             messages.error(request, 'Invalid credentials')

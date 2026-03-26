@@ -1,0 +1,103 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Tableau de bord Étudiant</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'student_list' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Étudiant</li>
+                    </ul>
+                </div>
+                <div class="col-auto text-right">
+                    <span class="text-muted">Bienvenue, {{ user.first_name }} {{ user.last_name }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Carte info étudiant -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        {% if student.student_image %}
+                            <img src="{{ student.student_image.url }}" alt="Photo" class="rounded-circle" width="100" height="100">
+                        {% else %}
+                            <i class="fas fa-user-graduate" style="font-size: 64px; color: #007bff;"></i>
+                        {% endif %}
+                        <h4 class="mt-3">{{ student.first_name }} {{ student.last_name }}</h4>
+                        <p class="text-muted">ID: {{ student.student_id }}</p>
+                        <p><strong>Classe:</strong> {{ student.student_class }}{% if student.section %} - Section {{ student.section }}{% endif %}</p>
+                        <p><strong>Téléphone:</strong> {{ student.mobile_number }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prochains jours fériés -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Prochains jours fériés</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Date de début</th>
+                                        <th>Date de fin</th>
+                                        <th>Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for holiday in upcoming_holidays %}
+                                    <tr>
+                                        <td>{{ holiday.name }}</td>
+                                        <td>{{ holiday.start_date|date:"d M Y" }}</td>
+                                        <td>{{ holiday.end_date|date:"d M Y" }}</td>
+                                        <td>
+                                            {% if holiday.type == 'national' %}
+                                                <span class="badge badge-primary">National</span>
+                                            {% elif holiday.type == 'religious' %}
+                                                <span class="badge badge-warning">Religieux</span>
+                                            {% else %}
+                                                <span class="badge badge-info">Spécial</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4">Aucun jour férié à venir</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <a href="{% url 'holiday_list' %}" class="btn btn-primary btn-sm mt-2">
+                            Voir tous les jours fériés
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line" style="font-size: 48px; color: #28a745;"></i>
+                        <h4 class="mt-3">Suivi académique</h4>
+                        <p class="text-muted">Cette section est en cours de développement.</p>
+                        <p>Bientôt : consultation des notes, emploi du temps, et résultats d'examens.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
