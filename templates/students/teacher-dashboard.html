@@ -1,0 +1,76 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Teacher Dashboard</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'teacher_dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Teacher</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        My Information
+                    </div>
+                    <div class="card-body">
+                        {% if teacher %}
+                            <p><strong>Name:</strong> {{ teacher.first_name }} {{ teacher.last_name }}</p>
+                            <p><strong>Email:</strong> {{ teacher.email }}</p>
+                            <p><strong>Phone:</strong> {{ teacher.phone }}</p>
+                            <p><strong>Specialization:</strong> {{ teacher.specialization }}</p>
+                            <p><strong>Department:</strong> {{ teacher.department.name|default:"Not assigned" }}</p>
+                            <p><strong>Hire Date:</strong> {{ teacher.hire_date }}</p>
+                        {% else %}
+                            <p>Your teacher profile is being set up. Please contact administrator.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        My Subjects
+                    </div>
+                    <div class="card-body">
+                        {% if subjects %}
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Subject Name</th>
+                                        <th>Code</th>
+                                        <th>Department</th>
+                                        <th>Coefficient</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for subject in subjects %}
+                                    <tr>
+                                        <td>{{ subject.name }}</td>
+                                        <td>{{ subject.code }}</td>
+                                        <td>{{ subject.department.name }}</td>
+                                        <td>{{ subject.coefficient }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No subjects assigned yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

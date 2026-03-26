@@ -61,21 +61,42 @@
                </li>
                <li class="nav-item dropdown has-arrow">
                   <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-                  <span class="user-img"><img class="rounded-circle" src="{%static 'assets/img/profiles/avatar-01.jpg'%}" width="31" alt="Ryan Taylor"></span>
+                     <span class="user-img">
+                           {% if user.is_authenticated %}
+                              <img class="rounded-circle" src="{% static 'assets/img/profiles/avatar-01.jpg' %}" width="31" alt="{{ user.username }}">
+                           {% else %}
+                              <img class="rounded-circle" src="{% static 'assets/img/profiles/avatar-01.jpg' %}" width="31" alt="Guest">
+                           {% endif %}
+                     </span>
                   </a>
                   <div class="dropdown-menu">
                      <div class="user-header">
-                        <div class="avatar avatar-sm">
-                           <img src="{%static 'assets/img/profiles/avatar-01.jpg'%}" alt="User Image" class="avatar-img rounded-circle">
-                        </div>
-                        <div class="user-text">
-                           {% comment %} <h6>{{user.username}}</h6> {% endcomment %}
-                           <p class="text-muted mb-0">Administrator</p>
-                        </div>
+                           <div class="avatar avatar-sm">
+                              <img src="{% static 'assets/img/profiles/avatar-01.jpg' %}" alt="User Image" class="avatar-img rounded-circle">
+                           </div>
+                           <div class="user-text">
+                              {% if user.is_authenticated %}
+                                 <h6>{{ user.get_full_name|default:user.username }}</h6>
+                                 <p class="text-muted mb-0">
+                                       {% if user.is_admin %}Administrator
+                                       {% elif user.is_teacher %}Teacher
+                                       {% elif user.is_student %}Student
+                                       {% else %}User{% endif %}
+                                 </p>
+                              {% else %}
+                                 <h6>Guest</h6>
+                                 <p class="text-muted mb-0">Not logged in</p>
+                              {% endif %}
+                           </div>
                      </div>
-                     <a class="dropdown-item" href="profile.html">My Profile</a>
-                     <a class="dropdown-item" href="inbox.html">Inbox</a>
-                     <a class="dropdown-item" href="">Logout</a>
+                     {% if user.is_authenticated %}
+                           <a class="dropdown-item" href="profile.html">My Profile</a>
+                           <a class="dropdown-item" href="inbox.html">Inbox</a>
+                           <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                     {% else %}
+                           <a class="dropdown-item" href="{% url 'login' %}">Login</a>
+                           <a class="dropdown-item" href="{% url 'signup' %}">Sign Up</a>
+                     {% endif %}
                   </div>
                </li>
             </ul>
@@ -90,43 +111,61 @@
                      <li class="submenu active">
                         <a href="#"><i class="fas fa-user-graduate"></i> <span> Dashboard</span> <span class="menu-arrow"></span></a>
                         <ul>
-                           <li><a href="index.html" class="active">Admin Dashboard</a></li>
-                           <li><a href="teacher-dashboard.html">Teacher Dashboard</a></li>
-                           <li><a href="student-dashboard.html">Student Dashboard</a></li>
+                           {% if user.is_authenticated %}
+                                 {% if user.is_admin %}
+                                    <li><a href="{% url 'admin_dashboard' %}">Admin Dashboard</a></li>
+                                 {% elif user.is_teacher %}
+                                    <li><a href="{% url 'teacher_dashboard' %}">Teacher Dashboard</a></li>
+                                 {% elif user.is_student %}
+                                    <li><a href="{% url 'student_dashboard' %}">Student Dashboard</a></li>
+                                 {% endif %}
+                           {% else %}
+                                 <li><a href="{% url 'login' %}">Login to view Dashboard</a></li>
+                           {% endif %}
                         </ul>
                      </li>
                      <li class="submenu">
                         <a href="#"><i class="fas fa-user-graduate"></i> <span> Students</span> <span class="menu-arrow"></span></a>
                         <ul>
-                           <li><a href="{% url 'student_list' %}">Student List</a></li>
-                           <li><a href="student-details.html">Student View</a></li>
-                           <li><a href="{% url 'add_student' %}">Student Add</a></li>
-                           <li><a href="edit-student.html">Student Edit</a></li>
+                           {% if user.is_authenticated and user.is_admin %}
+                                 <li><a href="{% url 'student_list' %}">Student List</a></li>
+                                 <li><a href="{% url 'add_student' %}">Student Add</a></li>
+                           {% else %}
+                                 <li><a href="{% url 'login' %}">Login as Admin to manage students</a></li>
+                           {% endif %}
                         </ul>
                      </li>
                      <li class="submenu">
                         <a href="#"><i class="fas fa-chalkboard-teacher"></i> <span> Teachers</span> <span class="menu-arrow"></span></a>
                         <ul>
-                           <li><a href="teachers.html">Teacher List</a></li>
-                           <li><a href="teacher-details.html">Teacher View</a></li>
-                           <li><a href="add-teacher.html">Teacher Add</a></li>
-                           <li><a href="edit-teacher.html">Teacher Edit</a></li>
+                           {% if user.is_authenticated and user.is_admin %}
+                                 <li><a href="{% url 'teacher_list' %}">Teacher List</a></li>
+                                 <li><a href="{% url 'teacher_add' %}">Teacher Add</a></li>
+                           {% else %}
+                                 <li><a href="{% url 'login' %}">Login as Admin to manage teachers</a></li>
+                           {% endif %}
                         </ul>
                      </li>
                      <li class="submenu">
                         <a href="#"><i class="fas fa-building"></i> <span> Departments</span> <span class="menu-arrow"></span></a>
                         <ul>
-                           <li><a href="departments.html">Department List</a></li>
-                           <li><a href="add-department.html">Department Add</a></li>
-                           <li><a href="edit-department.html">Department Edit</a></li>
+                           {% if user.is_authenticated and user.is_admin %}
+                                 <li><a href="{% url 'department_list' %}">Department List</a></li>
+                                 <li><a href="{% url 'department_add' %}">Department Add</a></li>
+                           {% else %}
+                                 <li><a href="{% url 'login' %}">Login as Admin to manage departments</a></li>
+                           {% endif %}
                         </ul>
                      </li>
                      <li class="submenu">
                         <a href="#"><i class="fas fa-book-reader"></i> <span> Subjects</span> <span class="menu-arrow"></span></a>
                         <ul>
-                           <li><a href="subjects.html">Subject List</a></li>
-                           <li><a href="add-subject.html">Subject Add</a></li>
-                           <li><a href="edit-subject.html">Subject Edit</a></li>
+                           {% if user.is_authenticated and user.is_admin %}
+                                 <li><a href="{% url 'subject_list' %}">Subject List</a></li>
+                                 <li><a href="{% url 'subject_add' %}">Subject Add</a></li>
+                           {% else %}
+                                 <li><a href="{% url 'login' %}">Login as Admin to manage subjects</a></li>
+                           {% endif %}
                         </ul>
                      </li>
                      <li class="menu-title">
@@ -167,13 +206,16 @@
                      <li class="submenu">
                         <a href="#"><i class="fas fa-shield-alt"></i> <span> Authentication </span> <span class="menu-arrow"></span></a>
                         <ul>
-                           <li><a href="">Login</a></li>
-                           <li><a href="">Register</a></li>
-                           <li><a href="">Forgot Password</a></li>
+                           {% if not user.is_authenticated %}
+                                 <li><a href="{% url 'login' %}">Login</a></li>
+                                 <li><a href="{% url 'signup' %}">Register</a></li>
+                                 <li><a href="forgot-password.html">Forgot Password</a></li>
+                           {% else %}
+                                 <li><a href="{% url 'logout' %}">Logout</a></li>
+                           {% endif %}
                            <li><a href="error-404.html">Error Page</a></li>
                         </ul>
                      </li>
-                     <li>
                         <a href="blank-page.html"><i class="fas fa-file"></i> <span>Blank Page</span></a>
                      </li>
                      <li class="menu-title">
