@@ -71,6 +71,32 @@
                 </div>
             </div>
         </div>
+
+        <!-- Nouvelle section pour Examens et Holidays -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <i class="fas fa-clipboard-list"></i> Examens
+                    </div>
+                    <div class="card-body text-center">
+                        <p>Gérez les examens et saisissez les notes des étudiants.</p>
+                        <a href="{% url 'exam_list' %}" class="btn btn-info">Voir les examens</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-warning text-white">
+                        <i class="fas fa-holly-berry"></i> Jours fériés
+                    </div>
+                    <div class="card-body text-center">
+                        <p>Consultez le calendrier des jours fériés.</p>
+                        <a href="{% url 'holiday_list' %}" class="btn btn-warning">Voir les jours fériés</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

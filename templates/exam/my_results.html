@@ -1,0 +1,65 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Mes Notes</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'student_list' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Mes Notes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center mb-0 datatable">
+                                <thead>
+                                    <tr>
+                                        <th>Examen</th>
+                                        <th>Matière</th>
+                                        <th>Date</th>
+                                        <th>Note</th>
+                                        <th>Coefficient</th>
+                                        <th>Commentaire</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in results %}
+                                    <tr>
+                                        <td>{{ result.exam.title }}</td>
+                                        <td>{{ result.exam.subject.name }}</td>
+                                        <td>{{ result.exam.date|date:"d M Y" }}</td>
+                                        <td>
+                                            <span class="badge {% if result.score >= 10 %}badge-success{% else %}badge-danger{% endif %}">
+                                                {{ result.score }}/20
+                                            </span>
+                                        </td>
+                                        <td>{{ result.exam.coefficient }}</td>
+                                        <td>{{ result.comment|default:"-" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            Aucune note disponible.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

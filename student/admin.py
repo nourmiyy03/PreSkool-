@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Parent, Student
-# Register your models here.
+
 
 @admin.register(Parent)  #decorateur
 class ParentAdmin(admin.ModelAdmin):

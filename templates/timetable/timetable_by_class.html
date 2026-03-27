@@ -1,0 +1,101 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Emploi du temps par classe</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'student_list' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Emploi du temps</li>
+                    </ul>
+                </div>
+                {% if user.is_admin or user.is_teacher %}
+                <div class="col-auto text-right">
+                    <a href="{% url 'add_timetable' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Ajouter un cours
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Classes</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            <a href="{% url 'timetable_by_class' %}" class="list-group-item list-group-item-action {% if not selected_class %}active{% endif %}">
+                                Toutes les classes
+                            </a>
+                            {% for class_item in classes %}
+                            <a href="#" class="list-group-item list-group-item-action">
+                                {{ class_item }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            {% if selected_class %}
+                                Emploi du temps - {{ selected_class.student_class }}
+                            {% else %}
+                                Emploi du temps
+                            {% endif %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Jour</th>
+                                        <th>Matière</th>
+                                        <th>Enseignant</th>
+                                        <th>Horaire</th>
+                                        <th>Salle</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for entry in timetable %}
+                                    <tr>
+                                        <td>
+                                            {% if entry.day == 'monday' %}Lundi
+                                            {% elif entry.day == 'tuesday' %}Mardi
+                                            {% elif entry.day == 'wednesday' %}Mercredi
+                                            {% elif entry.day == 'thursday' %}Jeudi
+                                            {% elif entry.day == 'friday' %}Vendredi
+                                            {% elif entry.day == 'saturday' %}Samedi
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ entry.subject.name }}</td>
+                                        <td>{{ entry.teacher.first_name }} {{ entry.teacher.last_name }}</td>
+                                        <td>{{ entry.start_time|time:"H:i" }} - {{ entry.end_time|time:"H:i" }}</td>
+                                        <td>{{ entry.room }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">Aucun cours trouvé.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

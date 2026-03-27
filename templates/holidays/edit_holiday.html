@@ -1,0 +1,79 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Modifier le Jour Férié</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'student_list' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'holiday_list' %}">Jours Fériés</a></li>
+                        <li class="breadcrumb-item active">Modifier</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Nom du jour férié <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="name" value="{{ holiday.name }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Type <span class="text-danger">*</span></label>
+                                        <select class="form-control" name="type" required>
+                                            <option value="national" {% if holiday.type == 'national' %}selected{% endif %}>National</option>
+                                            <option value="religious" {% if holiday.type == 'religious' %}selected{% endif %}>Religieux</option>
+                                            <option value="special" {% if holiday.type == 'special' %}selected{% endif %}>Spécial</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Date de début <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" name="start_date" value="{{ holiday.start_date|date:'Y-m-d' }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Date de fin <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" name="end_date" value="{{ holiday.end_date|date:'Y-m-d' }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <textarea class="form-control" name="description" rows="3">{{ holiday.description }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                    <a href="{% url 'holiday_list' %}" class="btn btn-secondary">Annuler</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'assets/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+{% endblock %}

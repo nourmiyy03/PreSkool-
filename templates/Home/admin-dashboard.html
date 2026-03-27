@@ -51,6 +51,28 @@
             </div>
         </div>
 
+        <!-- Nouvelle ligne pour Examens et Holidays -->
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="card bg-dark text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Examens</h5>
+                        <p class="card-text display-4">{{ total_exams|default:"0" }}</p>
+                        <a href="{% url 'exam_list' %}" class="btn btn-light">Gérer les examens</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-secondary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Jours fériés</h5>
+                        <p class="card-text display-4">{{ total_holidays|default:"0" }}</p>
+                        <a href="{% url 'holiday_list' %}" class="btn btn-light">Gérer les jours fériés</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
@@ -62,6 +84,8 @@
                         <a href="{% url 'teacher_add' %}" class="btn btn-success">Add Teacher</a>
                         <a href="{% url 'department_add' %}" class="btn btn-info">Add Department</a>
                         <a href="{% url 'subject_add' %}" class="btn btn-warning">Add Subject</a>
+                        <a href="{% url 'add_exam' %}" class="btn btn-dark">Add Exam</a>
+                        <a href="{% url 'add_holiday' %}" class="btn btn-secondary">Add Holiday</a>
                     </div>
                 </div>
             </div>

@@ -28,6 +28,8 @@ urlpatterns = [
     path('departments/', include('departments.urls')),
     path('subjects/', include('subjects.urls')),
     path('exam/', include('exam.urls')), 
+    path('holidays/', include('holidays.urls')),
+    path('timetable/', include('timetable.urls')),
 ]
 
 #pour servir les fichiers médias en développement

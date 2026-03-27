@@ -18,10 +18,10 @@
       <div class="main-wrapper">
          <div class="header">
             <div class="header-left">
-               <a href="index.html" class="logo">
+               <a href="{% url 'student_list' %}" class="logo">
                <img src="{%static 'assets/img/logo.png' %}" alt="Logo">
                </a>
-               <a href="index.html" class="logo logo-small">
+               <a href="{% url 'student_list' %}" class="logo logo-small">
                <img src="{%static 'assets/img/logo-small.png' %}" alt="Logo" width="30" height="30">
                </a>
             </div>
@@ -183,19 +183,19 @@
                         </ul>
                      </li>
                      <li>
-                        <a href="holiday.html"><i class="fas fa-holly-berry"></i> <span>Holiday</span></a>
+                        <a href="{% url 'holiday_list' %}"><i class="fas fa-holly-berry"></i> <span>Holiday</span></a>
                      </li>
                      <li>
                         <a href="fees.html"><i class="fas fa-comment-dollar"></i> <span>Fees</span></a>
                      </li>
                      <li>
-                        <a href="exam.html"><i class="fas fa-clipboard-list"></i> <span>Exam list</span></a>
+                        <a href="{% url 'exam_list' %}"><i class="fas fa-clipboard-list"></i> <span>Exam list</span></a>
                      </li>
                      <li>
                         <a href="event.html"><i class="fas fa-calendar-day"></i> <span>Events</span></a>
                      </li>
                      <li>
-                        <a href="time-table.html"><i class="fas fa-table"></i> <span>Time Table</span></a>
+                        <a href="{% url 'timetable_by_class' %}"><i class="fas fa-table"></i> <span>Time Table</span></a>
                      </li>
                      <li>
                         <a href="library.html"><i class="fas fa-book"></i> <span>Library</span></a>
@@ -216,6 +216,7 @@
                            <li><a href="error-404.html">Error Page</a></li>
                         </ul>
                      </li>
+                     <li>
                         <a href="blank-page.html"><i class="fas fa-file"></i> <span>Blank Page</span></a>
                      </li>
                      <li class="menu-title">
@@ -288,9 +289,6 @@
 
       </div>
 
- 
-
-    
       <script type="text/javascript">
           document.addEventListener('DOMContentLoaded', function() {
               // Select the notification dropdown element
@@ -357,7 +355,11 @@
           });
       </script>
       
+      <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+      <script src="{% static 'assets/js/popper.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+      <script src="{% static 'assets/js/script.js' %}"></script>
       
   </body>
   </html>
-  

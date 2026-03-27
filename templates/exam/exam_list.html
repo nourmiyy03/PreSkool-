@@ -1,23 +1,93 @@
-<h2>Exam List</h2>
+{% extends 'Home/base.html' %}
+{% load static %}
 
-<a href="{% url 'add_exam' %}">Add Exam</a>
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Examens</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'student_list' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Examens</li>
+                    </ul>
+                </div>
+                {% if user.is_admin %}
+                <div class="col-auto text-right float-right ml-auto">
+                    <a href="{% url 'add_exam' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Ajouter un examen
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
 
-<table>
-    <tr>
-        <th>Title</th>
-        <th>Subject</th>
-        <th>Date</th>
-        <th>Action</th>
-    </tr>
-
-    {% for exam in exams %}
-    <tr>
-        <td>{{ exam.title }}</td>
-        <td>{{ exam.subject }}</td>
-        <td>{{ exam.date }}</td>
-        <td>
-            <a href="{% url 'delete_exam' exam.id %}">Delete</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-center mb-0 datatable">
+                                <thead>
+                                    <tr>
+                                        <th>Titre</th>
+                                        <th>Matière</th>
+                                        <th>Date</th>
+                                        <th>Durée</th>
+                                        <th>Salle</th>
+                                        <th>Coefficient</th>
+                                        {% if user.is_admin or user.is_teacher %}
+                                        <th class="text-right">Actions</th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for exam in exams %}
+                                    <tr>
+                                        <td>{{ exam.title }}</td>
+                                        <td>{{ exam.subject.name }}</td>
+                                        <td>{{ exam.date|date:"d M Y" }}</td>
+                                        <td>{{ exam.duration }} min</td>
+                                        <td>{{ exam.room }}</td>
+                                        <td>{{ exam.coefficient }}</td>
+                                        {% if user.is_admin or user.is_teacher %}
+                                        <td class="text-right">
+                                            <div class="actions">
+                                                {% if user.is_teacher %}
+                                                <a href="{% url 'add_result' exam.id %}" class="btn btn-sm bg-info-light mr-2" title="Saisir notes">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                {% endif %}
+                                                {% if user.is_admin %}
+                                                <a href="{% url 'edit_exam' exam.id %}" class="btn btn-sm bg-success-light mr-2" title="Modifier">
+                                                    <i class="fas fa-pen"></i>
+                                                </a>
+                                                <form action="{% url 'delete_exam' exam.id %}" method="POST" style="display:inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm bg-danger-light" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet examen ?');">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        {% endif %}
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="{% if user.is_admin or user.is_teacher %}7{% else %}6{% endif %}" class="text-center">
+                                            Aucun examen trouvé.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
