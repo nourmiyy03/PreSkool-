@@ -126,3 +126,14 @@ def student_dashboard(request):
         }
     
     return render(request, 'students/student-dashboard.html', context)
+
+#pour rediriger dashboard selon user
+@login_required
+def dashboard(request):
+    if request.user.is_admin:
+        return redirect('admin_dashboard')
+    elif request.user.is_teacher:
+        return redirect('teacher_dashboard')
+    elif request.user.is_student:
+        return redirect('student_dashboard')
+    return redirect('login')

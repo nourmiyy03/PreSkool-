@@ -18,10 +18,10 @@
       <div class="main-wrapper">
          <div class="header">
             <div class="header-left">
-               <a href="{% url 'student_list' %}" class="logo">
+               <a href="{% url 'dashboard' %}" class="logo">
                <img src="{%static 'assets/img/logo.png' %}" alt="Logo">
                </a>
-               <a href="{% url 'student_list' %}" class="logo logo-small">
+               <a href="{% url 'dashboard' %}" class="logo logo-small">
                <img src="{%static 'assets/img/logo-small.png' %}" alt="Logo" width="30" height="30">
                </a>
             </div>
@@ -90,7 +90,8 @@
                            </div>
                      </div>
                      {% if user.is_authenticated %}
-                           <a class="dropdown-item" href="profile.html">My Profile</a>
+                           <a class="dropdown-item" href="{% url 'profile' %}">My Profile</a>
+
                            <a class="dropdown-item" href="inbox.html">Inbox</a>
                            <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
                      {% else %}
