@@ -88,7 +88,8 @@ def teacher_dashboard(request):
             'total_holidays': 0,
         }
     
-    return render(request, 'students/teacher-dashboard.html', context)
+    return render(request, 'teachers/teacher-dashboard.html', context)
+
 
 
 @login_required
