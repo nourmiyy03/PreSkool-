@@ -22,10 +22,10 @@ def admin_required(function=None):
 
 def teacher_required(function=None):
     """
-    Decorator for views that checks that the logged in user is a teacher or admin.
+    Decorator for views that checks that the logged in user is a teacher ONLY (not admin).
     """
     def check_teacher(user):
-        return user.is_authenticated and (user.is_teacher or user.is_admin)
+        return user.is_authenticated and user.is_teacher and not user.is_admin
     
     actual_decorator = user_passes_test(
         check_teacher,
@@ -39,10 +39,10 @@ def teacher_required(function=None):
 
 def student_required(function=None):
     """
-    Decorator for views that checks that the logged in user is a student or admin.
+    Decorator for views that checks that the logged in user is a student ONLY (not admin/teacher).
     """
     def check_student(user):
-        return user.is_authenticated and (user.is_student or user.is_admin)
+        return user.is_authenticated and user.is_student and not user.is_admin and not user.is_teacher
     
     actual_decorator = user_passes_test(
         check_student,

@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import user_passes_test
 from .models import Exam, Result
 from student.models import Student
 from subjects.models import Subject
@@ -10,29 +9,34 @@ from subjects.models import Subject
 def is_admin(user):
     return user.is_authenticated and (user.is_admin or user.is_superuser)
 
-def is_teacher(user):
+def is_teacher_or_admin(user):
     return user.is_authenticated and (user.is_teacher or user.is_admin)
+
+def is_teacher_only(user):
+    return user.is_authenticated and user.is_teacher and not user.is_admin
 
 def is_student(user):
     return user.is_authenticated and user.is_student
 
 
 @login_required
-@user_passes_test(is_teacher)
 def exam_list(request):
-    """Liste des examens (Admin et Teacher)"""
+    """Liste des examens - accessible à tous les connectés"""
     exams = Exam.objects.all()
     return render(request, 'exam/exam_list.html', {'exams': exams})
 
 
 @login_required
-@user_passes_test(is_admin)
 def add_exam(request):
-    """Ajouter un examen (Admin uniquement)"""
+    """Ajouter un examen - uniquement admin"""
+    if not is_admin(request.user):
+        messages.error(request, "Vous n'avez pas accès à cette page.")
+        return redirect('exam_list')
+    
     subjects = Subject.objects.all()
     
     if request.method == 'POST':
-        exam = Exam.objects.create(
+        Exam.objects.create(
             title=request.POST.get('title'),
             subject_id=request.POST.get('subject'),
             date=request.POST.get('date'),
@@ -48,9 +52,12 @@ def add_exam(request):
 
 
 @login_required
-@user_passes_test(is_admin)
 def edit_exam(request, exam_id):
-    """Modifier un examen (Admin uniquement)"""
+    """Modifier un examen - uniquement admin"""
+    if not is_admin(request.user):
+        messages.error(request, "Vous n'avez pas accès à cette page.")
+        return redirect('exam_list')
+    
     exam = get_object_or_404(Exam, id=exam_id)
     subjects = Subject.objects.all()
     
@@ -70,9 +77,12 @@ def edit_exam(request, exam_id):
 
 
 @login_required
-@user_passes_test(is_admin)
 def delete_exam(request, exam_id):
-    """Supprimer un examen (Admin uniquement)"""
+    """Supprimer un examen - uniquement admin"""
+    if not is_admin(request.user):
+        messages.error(request, "Vous n'avez pas accès à cette page.")
+        return redirect('exam_list')
+    
     exam = get_object_or_404(Exam, id=exam_id)
     exam.delete()
     messages.success(request, 'Examen supprimé avec succès!')
@@ -80,9 +90,12 @@ def delete_exam(request, exam_id):
 
 
 @login_required
-@user_passes_test(is_teacher)
 def add_result(request, exam_id):
-    """Saisie des notes (Enseignant et Admin)"""
+    """Saisie des notes - enseignant uniquement (admin peut aussi)"""
+    if not is_teacher_or_admin(request.user):
+        messages.error(request, "Vous n'avez pas accès à cette page.")
+        return redirect('exam_list')
+    
     exam = get_object_or_404(Exam, id=exam_id)
     students = Student.objects.all()
     
@@ -99,7 +112,6 @@ def add_result(request, exam_id):
         messages.success(request, 'Notes enregistrées avec succès!')
         return redirect('exam_list')
     
-    # Récupérer les résultats existants
     results = {r.student_id: r for r in Result.objects.filter(exam=exam)}
     return render(request, 'exam/add_result.html', {
         'exam': exam,
@@ -109,9 +121,12 @@ def add_result(request, exam_id):
 
 
 @login_required
-@user_passes_test(is_student)
 def my_results(request):
-    """Consulter mes notes (Étudiant uniquement)"""
+    """Consulter mes notes - étudiant uniquement"""
+    if not is_student(request.user):
+        messages.error(request, "Vous n'avez pas accès à cette page.")
+        return redirect('exam_list')
+    
     try:
         student = Student.objects.get(user=request.user)
         results = Result.objects.filter(student=student).select_related('exam')

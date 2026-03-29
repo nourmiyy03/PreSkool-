@@ -5,25 +5,23 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
+from home_auth.models import CustomUser  # ← AJOUTER
+
 
 # Fonctions de vérification des rôles
 def is_admin_or_teacher(user):
-    """Vérifie si l'utilisateur est admin ou enseignant"""
     return user.is_authenticated and (user.is_admin or user.is_teacher or user.is_superuser)
 
 def is_admin(user):
-    """Vérifie si l'utilisateur est admin"""
     return user.is_authenticated and (user.is_admin or user.is_superuser)
 
 def is_student(user):
-    """Vérifie si l'utilisateur est étudiant"""
     return user.is_authenticated and user.is_student
 
 
 @login_required
 @user_passes_test(is_admin_or_teacher)
 def student_list(request):
-    """Liste des étudiants - accessible uniquement aux admins et enseignants"""
     students = Student.objects.all()
     return render(request, 'students/students.html', {'students': students})
 
@@ -31,7 +29,6 @@ def student_list(request):
 @login_required
 @user_passes_test(is_admin_or_teacher)
 def add_student(request):
-    """Ajouter un étudiant - accessible uniquement aux admins et enseignants"""
     if request.method == 'POST':
         # Récupérer les données de l'étudiant
         first_name = request.POST.get('first_name')
@@ -58,7 +55,7 @@ def add_student(request):
         present_address = request.POST.get('present_address')
         permanent_address = request.POST.get('permanent_address')
         
-        # Créer le parent
+        # 1. Créer le parent
         parent = Parent.objects.create(
             father_name=father_name,
             father_occupation=father_occupation,
@@ -72,7 +69,24 @@ def add_student(request):
             permanent_address=permanent_address
         )
         
-        # Créer l'étudiant
+        # 2. Créer le compte utilisateur pour l'étudiant
+        email = f"{first_name.lower()}.{last_name.lower()}@school.com"
+        default_password = student_id
+        
+        # Vérifier si l'utilisateur existe déjà
+        if not CustomUser.objects.filter(username=email).exists():
+            user = CustomUser.objects.create_user(
+                username=email,
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                password=default_password,
+                is_student=True
+            )
+        else:
+            user = CustomUser.objects.get(username=email)
+        
+        # 3. Créer l'étudiant lié au parent ET à l'utilisateur
         student = Student.objects.create(
             first_name=first_name,
             last_name=last_name,
@@ -85,10 +99,11 @@ def add_student(request):
             admission_number=admission_number,
             section=section,
             student_image=student_image,
-            parent=parent
+            parent=parent,
+            user=user  # ← Lier l'étudiant à l'utilisateur
         )
         
-        messages.success(request, 'Student added Successfully')
+        messages.success(request, f'Student added! Email: {email}, Password: {default_password}')
         return redirect('student_list')
     else:
         return render(request, 'students/add-student.html')
@@ -97,7 +112,6 @@ def add_student(request):
 @login_required
 @user_passes_test(is_admin_or_teacher)
 def edit_student(request, student_id):
-    """Modifier un étudiant - accessible uniquement aux admins et enseignants"""
     student = get_object_or_404(Student, student_id=student_id)
     parent = student.parent
 
@@ -108,9 +122,14 @@ def edit_student(request, student_id):
         student.mobile_number = request.POST.get('mobile_number')
         student.section = request.POST.get('section')
 
-        # update parent
         parent.father_name = request.POST.get('father_name')
         parent.mother_name = request.POST.get('mother_name')
+
+        # Mettre à jour l'utilisateur si existe
+        if student.user:
+            student.user.first_name = student.first_name
+            student.user.last_name = student.last_name
+            student.user.save()
 
         student.save()
         parent.save()
@@ -123,10 +142,8 @@ def edit_student(request, student_id):
 
 @login_required
 def view_student(request, student_id):
-    """Voir les détails d'un étudiant - accessible à tous les utilisateurs connectés"""
     student = get_object_or_404(Student, student_id=student_id)
     
-    # Si l'utilisateur est un étudiant, il ne peut voir que sa propre fiche
     if request.user.is_student:
         try:
             if student.user != request.user:
@@ -142,8 +159,9 @@ def view_student(request, student_id):
 @login_required
 @user_passes_test(is_admin_or_teacher)
 def delete_student(request, student_id):
-    """Supprimer un étudiant - accessible uniquement aux admins et enseignants"""
     student = get_object_or_404(Student, student_id=student_id)
+    if student.user:
+        student.user.delete()
     student.delete()
     messages.success(request, 'Student deleted successfully')
     return redirect('student_list')

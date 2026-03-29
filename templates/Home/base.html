@@ -168,37 +168,49 @@
                            {% endif %}
                         </ul>
                      </li>
-                     <li class="menu-title">
-                        <span>Management</span>
+                                   <li class="menu-title">
+                          <span>Management</span>
+                      </li>
+                      <li class="submenu">
+                          <a href="#"><i class="fas fa-file-invoice-dollar"></i> <span> Accounts</span> <span class="menu-arrow"></span></a>
+                          <ul>
+                              <li><a href="fees-collections.html">Fees Collection</a></li>
+                              <li><a href="expenses.html">Expenses</a></li>
+                              <li><a href="salary.html">Salary</a></li>
+                              <li><a href="add-fees-collection.html">Add Fees</a></li>
+                              <li><a href="add-expenses.html">Add Expenses</a></li>
+                              <li><a href="add-salary.html">Add Salary</a></li>
+                          </ul>
+                      </li>
+                      <li>
+                          <a href="{% url 'holiday_list' %}"><i class="fas fa-holly-berry"></i> <span>Holiday</span></a>
+                      </li>
+                      <li>
+                          <a href="fees.html"><i class="fas fa-comment-dollar"></i> <span>Fees</span></a>
+                      </li>
+
+                     <!-- Exam list - visible pour Admin et Teacher -->
+                     {% if user.is_admin or user.is_teacher %}
+                     <li>
+                         <a href="{% url 'exam_list' %}"><i class="fas fa-clipboard-list"></i> <span>Exam list</span></a>
                      </li>
-                     <li class="submenu">
-                        <a href="#"><i class="fas fa-file-invoice-dollar"></i> <span> Accounts</span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           <li><a href="fees-collections.html">Fees Collection</a></li>
-                           <li><a href="expenses.html">Expenses</a></li>
-                           <li><a href="salary.html">Salary</a></li>
-                           <li><a href="add-fees-collection.html">Add Fees</a></li>
-                           <li><a href="add-expenses.html">Add Expenses</a></li>
-                           <li><a href="add-salary.html">Add Salary</a></li>
-                        </ul>
+                      {% endif %}
+
+                      <!-- Mes Notes - visible pour Student uniquement -->
+                      {% if user.is_student %}
+                     <li>
+                         <a href="{% url 'my_results' %}"><i class="fas fa-chart-line"></i> <span>Mes Notes</span></a>
+                     </li>
+                     {% endif %}
+
+                     <li>
+                         <a href="event.html"><i class="fas fa-calendar-day"></i> <span>Events</span></a>
                      </li>
                      <li>
-                        <a href="{% url 'holiday_list' %}"><i class="fas fa-holly-berry"></i> <span>Holiday</span></a>
+                         <a href="{% url 'timetable_by_class' %}"><i class="fas fa-table"></i> <span>Time Table</span></a>
                      </li>
                      <li>
-                        <a href="fees.html"><i class="fas fa-comment-dollar"></i> <span>Fees</span></a>
-                     </li>
-                     <li>
-                        <a href="{% url 'exam_list' %}"><i class="fas fa-clipboard-list"></i> <span>Exam list</span></a>
-                     </li>
-                     <li>
-                        <a href="event.html"><i class="fas fa-calendar-day"></i> <span>Events</span></a>
-                     </li>
-                     <li>
-                        <a href="{% url 'timetable_by_class' %}"><i class="fas fa-table"></i> <span>Time Table</span></a>
-                     </li>
-                     <li>
-                        <a href="library.html"><i class="fas fa-book"></i> <span>Library</span></a>
+                         <a href="library.html"><i class="fas fa-book"></i> <span>Library</span></a>
                      </li>
                      <li class="menu-title">
                         <span>Pages</span>
@@ -289,18 +301,38 @@
 
       </div>
 
+       
+      <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+      <script src="{% static 'assets/js/popper.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+      <script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+      <script src="{% static 'assets/js/script.js' %}"></script>
+
+      <script>
+          // Script pour les sous-menus (dépend de jQuery)
+          $(document).ready(function() {
+              $('.submenu > a').on('click', function(e) {
+                  e.preventDefault();
+                  var parentLi = $(this).parent();
+                  
+                  $('.submenu').not(parentLi).removeClass('active');
+                  $('.submenu').not(parentLi).find('ul').slideUp(300);
+                  
+                  parentLi.toggleClass('active');
+                  parentLi.find('ul').slideToggle(300);
+              });
+          });
+      </script>
+
       <script type="text/javascript">
+          // Script pour les notifications
           document.addEventListener('DOMContentLoaded', function() {
-              // Select the notification dropdown element
               const notiDropdown = document.querySelector('.noti-dropdown');
               const clearAllBtn = document.querySelector('.clear-noti');
       
               if (notiDropdown) {
-                  // Add a click event listener to the notification dropdown
                   notiDropdown.addEventListener('click', function() {
                       const url = "";
-      
-                      // Use the Fetch API to send a POST request to mark notifications as read
                       fetch(url, {
                           method: 'POST',
                           headers: {
@@ -308,28 +340,20 @@
                               'Content-Type': 'application/x-www-form-urlencoded',
                           }
                       })
-                      .then(response => response.json())  // Parse the JSON response
+                      .then(response => response.json())
                       .then(data => {
                           if (data.status === 'success') {
-                              // Remove the badge if notifications are successfully marked as read
                               const badge = document.querySelector('.badge');
-                              if (badge) {
-                                  badge.remove();
-                              }
+                              if (badge) badge.remove();
                           }
                       })
-                      .catch(error => {
-                          console.error('Error:', error);  // Log any errors
-                      });
+                      .catch(error => console.error('Error:', error));
                   });
               }
       
               if (clearAllBtn) {
-                  // Add a click event listener to the "Clear All" button
                   clearAllBtn.addEventListener('click', function() {
-                      const clearUrl = "";  // Ensure this URL points to the correct view
-      
-                      // Use Fetch to send a POST request to clear all notifications
+                      const clearUrl = "";
                       fetch(clearUrl, {
                           method: 'POST',
                           headers: {
@@ -337,29 +361,32 @@
                               'Content-Type': 'application/x-www-form-urlencoded',
                           }
                       })
-                      .then(response => response.json())  // Parse the JSON response
+                      .then(response => response.json())
                       .then(data => {
                           if (data.status === 'success') {
-                              // Clear all notifications from the dropdown
                               const notificationList = document.querySelector('.notification-list');
                               if (notificationList) {
-                                  notificationList.innerHTML = '<li>No new notifications</li>';  // Optionally show a "No new notifications" message
+                                  notificationList.innerHTML = '<li>No new notifications</li>';
                               }
                           }
                       })
-                      .catch(error => {
-                          console.error('Error:', error);  // Log any errors
-                      });
+                      .catch(error => console.error('Error:', error));
                   });
               }
           });
       </script>
-      
-      <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
-      <script src="{% static 'assets/js/popper.min.js' %}"></script>
-      <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
-      <script src="{% static 'assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
-      <script src="{% static 'assets/js/script.js' %}"></script>
-      
-  </body>
+      <script>
+    $(document).ready(function() {
+        console.log("jQuery chargé !");
+        console.log("Nombre de .submenu trouvés : " + $('.submenu').length);
+        
+        $('.submenu > a').on('click', function(e) {
+            e.preventDefault();
+            console.log("Cliqué sur : " + $(this).find('span').first().text());
+            var parentLi = $(this).parent();
+            parentLi.find('ul').slideToggle(300);
+        });
+    });
+</script>
+    </body>
   </html>
