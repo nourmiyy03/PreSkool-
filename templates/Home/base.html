@@ -125,50 +125,58 @@
                            {% endif %}
                         </ul>
                      </li>
+                    {% if user.is_admin or user.is_teacher %}
                      <li class="submenu">
                         <a href="#"><i class="fas fa-user-graduate"></i> <span> Students</span> <span class="menu-arrow"></span></a>
                         <ul>
-                           {% if user.is_authenticated and user.is_admin %}
-                                 <li><a href="{% url 'student_list' %}">Student List</a></li>
-                                 <li><a href="{% url 'add_student' %}">Student Add</a></li>
-                           {% else %}
-                                 <li><a href="{% url 'login' %}">Login as Admin to manage students</a></li>
-                           {% endif %}
+                             <li><a href="{% url 'student_list' %}">Student List</a></li>
+
+                             {% if user.is_admin %}
+                             <li><a href="{% url 'add_student' %}">Student Add</a></li>
+                             {% endif %}
+
                         </ul>
                      </li>
-                     <li class="submenu">
-                        <a href="#"><i class="fas fa-chalkboard-teacher"></i> <span> Teachers</span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           {% if user.is_authenticated and user.is_admin %}
-                                 <li><a href="{% url 'teacher_list' %}">Teacher List</a></li>
-                                 <li><a href="{% url 'teacher_add' %}">Teacher Add</a></li>
-                           {% else %}
-                                 <li><a href="{% url 'login' %}">Login as Admin to manage teachers</a></li>
-                           {% endif %}
-                        </ul>
-                     </li>
-                     <li class="submenu">
-                        <a href="#"><i class="fas fa-building"></i> <span> Departments</span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           {% if user.is_authenticated and user.is_admin %}
-                                 <li><a href="{% url 'department_list' %}">Department List</a></li>
-                                 <li><a href="{% url 'department_add' %}">Department Add</a></li>
-                           {% else %}
-                                 <li><a href="{% url 'login' %}">Login as Admin to manage departments</a></li>
-                           {% endif %}
-                        </ul>
-                     </li>
-                     <li class="submenu">
-                        <a href="#"><i class="fas fa-book-reader"></i> <span> Subjects</span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           {% if user.is_authenticated and user.is_admin %}
-                                 <li><a href="{% url 'subject_list' %}">Subject List</a></li>
-                                 <li><a href="{% url 'subject_add' %}">Subject Add</a></li>
-                           {% else %}
-                                 <li><a href="{% url 'login' %}">Login as Admin to manage subjects</a></li>
-                           {% endif %}
-                        </ul>
-                     </li>
+                     {% endif %}
+                     {% if user.is_admin or user.is_teacher %}
+                          <li class="submenu">
+                             <a href="#"><i class="fas fa-chalkboard-teacher"></i> <span> Teachers</span> <span class="menu-arrow"></span></a>
+                             <ul>
+                                  <li><a href="{% url 'teacher_list' %}">Teacher List</a></li>
+
+                                  {% if user.is_admin %}
+                                  <li><a href="{% url 'teacher_add' %}">Teacher Add</a></li>
+                                  {% endif %}
+
+                             </ul>
+                          </li>
+                     {% endif %}
+                     {% if user.is_admin or user.is_teacher %}
+                               <li class="submenu">
+                                  <a href="#"><i class="fas fa-building"></i> <span> Departments</span> <span class="menu-arrow"></span></a>
+                                  <ul>
+                                       <li><a href="{% url 'department_list' %}">Department List</a></li>
+
+                                       {% if user.is_admin %}
+                                       <li><a href="{% url 'department_add' %}">Department Add</a></li>
+                                       {% endif %}
+
+                                  </ul>
+                               </li>
+                     {% endif %}
+                     {% if user.is_admin or user.is_teacher %}
+                          <li class="submenu">
+                             <a href="#"><i class="fas fa-book-reader"></i> <span> Subjects</span> <span class="menu-arrow"></span></a>
+                             <ul>
+                                  <li><a href="{% url 'subject_list' %}">Subject List</a></li>
+
+                                  {% if user.is_admin %}
+                                  <li><a href="{% url 'subject_add' %}">Subject Add</a></li>
+                                  {% endif %}
+
+                             </ul>
+                          </li>
+                     {% endif %}
                                    <li class="menu-title">
                           <span>Management</span>
                       </li>
@@ -385,6 +393,35 @@
             e.preventDefault();
             console.log("Cliqué sur : " + $(this).find('span').first().text());
             var parentLi = $(this).parent();
+            parentLi.find('ul').slideToggle(300);
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // Récupérer l'URL actuelle
+        var currentUrl = window.location.pathname;
+        
+        // Marquer le menu actif selon l'URL
+        $('.submenu a').each(function() {
+            var linkUrl = $(this).attr('href');
+            if (linkUrl && currentUrl.indexOf(linkUrl) !== -1) {
+                $(this).closest('.submenu').addClass('active');
+                $(this).closest('.submenu').find('ul').show();
+            }
+        });
+        
+        // Activer les sous-menus avec animation
+        $('.submenu > a').on('click', function(e) {
+            e.preventDefault();
+            var parentLi = $(this).parent();
+            
+            // Fermer les autres sous-menus
+            $('.submenu').not(parentLi).removeClass('active');
+            $('.submenu').not(parentLi).find('ul').slideUp(300);
+            
+            // Ouvrir/fermer celui cliqué
+            parentLi.toggleClass('active');
             parentLi.find('ul').slideToggle(300);
         });
     });
