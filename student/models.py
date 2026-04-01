@@ -21,7 +21,8 @@ class Parent(models.Model):
         return f"{self.father_name} & {self.mother_name}"
 
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='student_profile')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, 
+                                blank=True, related_name='student_profile')
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     student_id = models.CharField(max_length=20)
