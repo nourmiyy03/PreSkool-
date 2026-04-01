@@ -66,7 +66,7 @@ def signup_view(request):
         elif role == 'admin':
             user.is_admin = True
         
-        # Optionnel : marquer comme autorisé si pas besoin de validation email
+
         user.is_authorized = True
         
         user.save()

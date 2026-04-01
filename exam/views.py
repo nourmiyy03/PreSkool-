@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Exam, Result
 from student.models import Student
 from subjects.models import Subject
-from teachers.models import Teacher  # ← Ajout
+from teachers.models import Teacher  
 
 
 def is_admin(user):
