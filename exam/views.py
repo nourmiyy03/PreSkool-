@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Exam, Result
 from student.models import Student
 from subjects.models import Subject
+from teachers.models import Teacher  # ← Ajout
 
 
 def is_admin(user):
@@ -21,8 +22,23 @@ def is_student(user):
 
 @login_required
 def exam_list(request):
-    """Liste des examens - accessible à tous les connectés"""
-    exams = Exam.objects.all()
+    """Liste des examens - filtre selon le rôle"""
+    user = request.user
+    
+    if user.is_admin or user.is_superuser:
+        # Admin voit tous les examens
+        exams = Exam.objects.all()
+    elif user.is_teacher:
+        # Enseignant voit uniquement les examens de ses matières
+        try:
+            teacher = Teacher.objects.get(user=user)
+            exams = Exam.objects.filter(subject__teacher=teacher)
+        except Teacher.DoesNotExist:
+            exams = Exam.objects.none()
+    else:
+        # Étudiant ne voit pas les examens (redirection)
+        return redirect('my_results')
+    
     return render(request, 'exam/exam_list.html', {'exams': exams})
 
 
@@ -91,12 +107,21 @@ def delete_exam(request, exam_id):
 
 @login_required
 def add_result(request, exam_id):
-    """Saisie des notes - enseignant uniquement (admin peut aussi)"""
-    if not is_teacher_or_admin(request.user):
-        messages.error(request, "Vous n'avez pas accès à cette page.")
-        return redirect('exam_list')
-    
+    """Saisie des notes - enseignant ne peut saisir que pour ses matières"""
     exam = get_object_or_404(Exam, id=exam_id)
+    user = request.user
+    
+    # Vérifier que l'enseignant a le droit de modifier cet examen
+    if user.is_teacher:
+        try:
+            teacher = Teacher.objects.get(user=user)
+            if exam.subject.teacher != teacher:
+                messages.error(request, "Vous n'êtes pas autorisé à saisir les notes pour cet examen.")
+                return redirect('exam_list')
+        except Teacher.DoesNotExist:
+            messages.error(request, "Profil enseignant non trouvé.")
+            return redirect('exam_list')
+    
     students = Student.objects.all()
     
     if request.method == 'POST':

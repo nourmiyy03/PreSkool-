@@ -1,0 +1,109 @@
+{% extends 'Home/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Modifier un cours</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'student_list' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'timetable_by_class' %}">Emploi du temps</a></li>
+                        <li class="breadcrumb-item active">Modifier un cours</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Matière <span class="text-danger">*</span></label>
+                                        <select class="form-control" name="subject" required>
+                                            <option value="">Sélectionner une matière</option>
+                                            {% for subject in subjects %}
+                                            <option value="{{ subject.id }}" {% if timetable.subject.id == subject.id %}selected{% endif %}>
+                                                {{ subject.name }} ({{ subject.code }})
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Enseignant <span class="text-danger">*</span></label>
+                                        <select class="form-control" name="teacher" required>
+                                            <option value="">Sélectionner un enseignant</option>
+                                            {% for teacher in teachers %}
+                                            <option value="{{ teacher.id }}" {% if timetable.teacher.id == teacher.id %}selected{% endif %}>
+                                                {{ teacher.first_name }} {{ teacher.last_name }} ({{ teacher.specialization }})
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Classe <span class="text-danger">*</span></label>
+                                        <select class="form-control" name="student_class" required>
+                                            <option value="">Sélectionner une classe</option>
+                                            {% for class in classes %}
+                                            <option value="{{ class.id }}" {% if timetable.student_class.id == class.id %}selected{% endif %}>
+                                                {{ class.student_class }} - Section {{ class.section }} ({{ class.first_name }} {{ class.last_name }})
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Jour <span class="text-danger">*</span></label>
+                                        <select class="form-control" name="day" required>
+                                            <option value="">Sélectionner un jour</option>
+                                            {% for day_code, day_name in days %}
+                                            <option value="{{ day_code }}" {% if timetable.day == day_code %}selected{% endif %}>
+                                                {{ day_name }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Heure de début <span class="text-danger">*</span></label>
+                                        <input type="time" class="form-control" name="start_time" value="{{ timetable.start_time|time:'H:i' }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Heure de fin <span class="text-danger">*</span></label>
+                                        <input type="time" class="form-control" name="end_time" value="{{ timetable.end_time|time:'H:i' }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Salle <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="room" value="{{ timetable.room }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                                    <a href="{% url 'timetable_by_class' %}" class="btn btn-secondary">Annuler</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

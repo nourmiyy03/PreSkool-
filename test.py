@@ -8,7 +8,7 @@ Run with: python test.py
 import os
 import django
 import random
-from datetime import date, timedelta
+from datetime import date
 
 # Setup Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'school.settings')
@@ -25,8 +25,6 @@ from subjects.models import Subject
 User = get_user_model()
 
 # Test data
-FIRST_NAMES = ['John', 'Jane', 'Michael', 'Sarah', 'David', 'Emma', 'James', 'Lisa', 'Robert', 'Maria']
-LAST_NAMES = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez']
 SPECIALIZATIONS = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'History', 'Computer Science', 'Physical Education']
 SUBJECT_NAMES = [
     ('MATH101', 'Mathematics'), ('PHY101', 'Physics'), ('CHM101', 'Chemistry'),
@@ -38,10 +36,57 @@ DEPARTMENT_NAMES = [
     'Humanities Department', 'Computer Science Department', 'Physical Education Department'
 ]
 
+# Student data - each student with their own unique parents
+STUDENT_DATA = [
+    {'first': 'Nyx', 'last': 'Night', 'gender': 'Male', 'class': '3rd Grade', 
+     'father': 'Rhys Night', 'mother': 'Feyre Archer', 'father_occ': 'Architect', 'mother_occ': 'Artist'},
+    {'first': 'Velaris', 'last': 'Night', 'gender': 'Female', 'class': '1st Grade',
+     'father': 'Rhys Night II', 'mother': 'Feyre Archer II', 'father_occ': 'Architect', 'mother_occ': 'Artist'},
+    {'first': 'Silas', 'last': 'Nazari', 'gender': 'Male', 'class': '2nd Grade',
+     'father': 'Cassian Nazari', 'mother': 'Nesta Archer', 'father_occ': 'Physical Therapist', 'mother_occ': 'Librarian'},
+    {'first': 'Elara', 'last': 'Shadow', 'gender': 'Female', 'class': '5th year',
+     'father': 'Azriel Shadow', 'mother': 'Gwyneth Rose', 'father_occ': 'Security Consultant', 'mother_occ': 'Teacher'},
+    {'first': 'Andarna', 'last': 'Rios', 'gender': 'Female', 'class': '1st Grade',
+     'father': 'Xaden Rios', 'mother': 'Violet Sorrengail', 'father_occ': 'Business Owner', 'mother_occ': 'Writer'},
+    {'first': 'Tairn', 'last': 'Rios', 'gender': 'Male', 'class': '3rd Grade',
+     'father': 'Xaden Rios II', 'mother': 'Violet Sorrengail II', 'father_occ': 'Business Owner', 'mother_occ': 'Writer'},
+    {'first': 'Aura', 'last': 'Mairi', 'gender': 'Female', 'class': '2nd Grade',
+     'father': 'Liam Mairi', 'mother': 'Sloane Mairi', 'father_occ': 'Engineer', 'mother_occ': 'Nurse'},
+    {'first': 'Aria', 'last': 'Moreland', 'gender': 'Female', 'class': '5th year',
+     'father': 'James Moreland', 'mother': 'Sarah Lark', 'father_occ': 'Accountant', 'mother_occ': 'Marketing Manager'},
+    {'first': 'Caspian', 'last': 'Moreland', 'gender': 'Male', 'class': '1st Grade',
+     'father': 'James Moreland II', 'mother': 'Sarah Lark II', 'father_occ': 'Accountant', 'mother_occ': 'Marketing Manager'},
+    {'first': 'Amelia', 'last': 'Basset', 'gender': 'Female', 'class': '2nd Grade',
+     'father': 'Simon Basset', 'mother': 'Daphne Basset', 'father_occ': 'Lawyer', 'mother_occ': 'Doctor'},
+    {'first': 'David', 'last': 'Basset', 'gender': 'Male', 'class': 'Kindergarten',
+     'father': 'Simon Basset II', 'mother': 'Daphne Basset II', 'father_occ': 'Lawyer', 'mother_occ': 'Doctor'},
+    {'first': 'Edmund', 'last': 'Bridgerton', 'gender': 'Male', 'class': '3rd Grade',
+     'father': 'Anthony Bridgerton', 'mother': 'Kate Bridgerton', 'father_occ': 'Banker', 'mother_occ': 'Teacher'},
+    {'first': 'Charlotte', 'last': 'Bridgerton', 'gender': 'Female', 'class': '1st Grade',
+     'father': 'Anthony Bridgerton II', 'mother': 'Kate Bridgerton II', 'father_occ': 'Banker', 'mother_occ': 'Teacher'},
+    {'first': 'Charles', 'last': 'Williams', 'gender': 'Male', 'class': '1st Grade',
+     'father': 'Michael Williams', 'mother': 'Emily Williams', 'father_occ': 'Software Developer', 'mother_occ': 'Graphic Designer'},
+    {'first': 'Violet', 'last': 'Williams', 'gender': 'Female', 'class': 'Kindergarten',
+     'father': 'Michael Williams II', 'mother': 'Emily Williams II', 'father_occ': 'Software Developer', 'mother_occ': 'Graphic Designer'},
+    {'first': 'Henry', 'last': 'Goldberg', 'gender': 'Male', 'class': '2nd Grade',
+     'father': 'Joseph Goldberg', 'mother': 'Loretta Quinn', 'father_occ': 'Bookstore Owner', 'mother_occ': 'Chef'},
+    {'first': 'Lyuba', 'last': 'Miller', 'gender': 'Female', 'class': '3rd Grade',
+     'father': 'David Miller', 'mother': 'Anna Miller', 'father_occ': 'Professor', 'mother_occ': 'Journalist'},
+]
+
+# Teacher data
+TEACHER_DATA = [
+    {'first': 'Sarah', 'last': 'Maas', 'specialization': 'English'},
+    {'first': 'Rebecca', 'last': 'Yarros', 'specialization': 'History'},
+    {'first': 'Ali', 'last': 'Hazelwood', 'specialization': 'Biology'},
+    {'first': 'Julia', 'last': 'Quinn', 'specialization': 'English'},
+    {'first': 'Caroline', 'last': 'Kepnes', 'specialization': 'Psychology'},
+]
+
 def create_superuser():
-    """Create admin superuser if not exists"""
+    """Create admin superuser"""
     if not User.objects.filter(username='admin@preskool.com').exists():
-        admin = User.objects.create_superuser(
+        User.objects.create_superuser(
             username='admin@preskool.com',
             email='admin@preskool.com',
             password='admin123',
@@ -51,185 +96,153 @@ def create_superuser():
             is_authorized=True
         )
         print('✓ Admin user created (admin@preskool.com / admin123)')
-        return admin
-    else:
-        admin = User.objects.get(username='admin@preskool.com')
-        print('✓ Admin user already exists')
-        return admin
 
 def create_test_users():
     """Create test users for teachers and students"""
-    users_created = []
-    
-    # Create 5 teacher users
-    for i in range(5):
-        username = f'teacher{i+1}@preskool.com'
+    # Create teacher users
+    for teacher in TEACHER_DATA:
+        username = f"{teacher['first'].lower()}.{teacher['last'].lower()}@preskool.com"
         if not User.objects.filter(username=username).exists():
-            user = User.objects.create_user(
+            User.objects.create_user(
                 username=username,
                 email=username,
                 password='teacher123',
-                first_name=FIRST_NAMES[i % len(FIRST_NAMES)],
-                last_name=LAST_NAMES[i % len(LAST_NAMES)],
+                first_name=teacher['first'],
+                last_name=teacher['last'],
                 is_teacher=True,
                 is_authorized=True
             )
-            users_created.append(user)
-            print(f'✓ Teacher user created: {user.first_name} {user.last_name} ({username})')
+            print(f'✓ Teacher user created: {teacher["first"]} {teacher["last"]}')
     
-    # Create 10 student users
-    for i in range(10):
-        username = f'student{i+1}@preskool.com'
+    # Create student users
+    for student in STUDENT_DATA:
+        username = f"{student['first'].lower()}.{student['last'].lower()}@preskool.com"
         if not User.objects.filter(username=username).exists():
-            user = User.objects.create_user(
+            User.objects.create_user(
                 username=username,
                 email=username,
                 password='student123',
-                first_name=FIRST_NAMES[i % len(FIRST_NAMES)],
-                last_name=LAST_NAMES[i % len(LAST_NAMES)],
+                first_name=student['first'],
+                last_name=student['last'],
                 is_student=True,
                 is_authorized=True
             )
-            users_created.append(user)
-            print(f'✓ Student user created: {user.first_name} {user.last_name} ({username})')
-    
-    return users_created
+            print(f'✓ Student user created: {student["first"]} {student["last"]}')
 
 def create_departments():
     """Create departments"""
     departments = []
     for dept_name in DEPARTMENT_NAMES:
-        dept, created = Department.objects.get_or_create(
+        dept, _ = Department.objects.get_or_create(
             name=dept_name,
             defaults={'description': f'Department of {dept_name}'}
         )
         departments.append(dept)
-        if created:
-            print(f'✓ Department created: {dept.name}')
-        else:
-            print(f'✓ Department already exists: {dept.name}')
+        print(f'✓ Department created: {dept.name}')
     return departments
 
 def create_teachers(departments):
-    """Create teachers linked to users and departments"""
+    """Create teachers"""
     teachers = []
     teacher_users = User.objects.filter(is_teacher=True)
     
-    for i, user in enumerate(teacher_users):
+    for user in teacher_users:
+        teacher_info = next((t for t in TEACHER_DATA if t['first'] == user.first_name), None)
+        specialization = teacher_info['specialization'] if teacher_info else random.choice(SPECIALIZATIONS)
+        
+        department = None
+        for dept in departments:
+            if specialization in dept.name or (specialization in ['Physics', 'Chemistry', 'Biology'] and 'Science' in dept.name):
+                department = dept
+                break
+        if not department:
+            department = random.choice(departments)
+        
         teacher, created = Teacher.objects.get_or_create(
-            user=user,  # Utiliser user comme clé unique
+            user=user,
             defaults={
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'email': user.email,
                 'phone': f'06{random.randint(10000000, 99999999)}',
-                'address': f'{random.randint(1, 100)} Main Street, City',
+                'address': f'{random.randint(1, 100)} School Street',
                 'hire_date': date(2020, random.randint(1, 12), random.randint(1, 28)),
-                'specialization': random.choice(SPECIALIZATIONS),
-                'department': random.choice(departments) if departments else None
+                'specialization': specialization,
+                'department': department
             }
         )
         teachers.append(teacher)
-        if created:
-            print(f'✓ Teacher created: {teacher.first_name} {teacher.last_name} - {teacher.specialization}')
-        else:
-            print(f'✓ Teacher already exists: {teacher.first_name} {teacher.last_name}')
+        print(f'✓ Teacher created: {teacher.first_name} {teacher.last_name} - {teacher.specialization}')
     
     return teachers
 
-def create_parents():
-    """Create parents for students - one parent per student"""
-    parents = []
-    student_count = User.objects.filter(is_student=True).count()
-    
-    print(f"Creating {student_count} parents...")
-    
-    for i in range(student_count):
-        parent, created = Parent.objects.get_or_create(
-            father_name=f'Father {i+1}',
-            mother_name=f'Mother {i+1}',
-            defaults={
-                'father_occupation': random.choice(['Engineer', 'Doctor', 'Teacher', 'Businessman', 'Architect']),
-                'father_mobile': f'06{random.randint(10000000, 99999999)}',
-                'father_email': f'father{i+1}@example.com',
-                'mother_occupation': random.choice(['Doctor', 'Teacher', 'Nurse', 'Lawyer', 'Accountant']),
-                'mother_mobile': f'06{random.randint(10000000, 99999999)}',
-                'mother_email': f'mother{i+1}@example.com',
-                'present_address': f'{random.randint(1, 200)} Present Street, City',
-                'permanent_address': f'{random.randint(1, 200)} Permanent Street, City'
-            }
-        )
-        parents.append(parent)
-        if created:
-            print(f'✓ Parent created: {parent.father_name} & {parent.mother_name}')
-    
-    return parents
-
-def create_students(parents):
-    """Create students linked to users and parents - one parent per student"""
+def create_parents_and_students():
+    """Create parents and students (OneToOne relationship)"""
     students = []
-    student_users = User.objects.filter(is_student=True)
-    classes = ['1st Grade', '2nd Grade', '3rd Grade', '4th Grade', '5th Grade']
-    sections = ['A', 'B', 'C']
     
-    for i, user in enumerate(student_users):
-        # Each student gets a unique parent
-        if i >= len(parents):
-            print(f"⚠ Not enough parents for student {user.email}")
-            break
+    for idx, student_data in enumerate(STUDENT_DATA):
+        # Create unique parent for this student
+        parent = Parent.objects.create(
+            father_name=student_data['father'],
+            mother_name=student_data['mother'],
+            father_occupation=student_data['father_occ'],
+            father_mobile=f'06{random.randint(10000000, 99999999)}',
+            father_email=f"{student_data['father'].lower().replace(' ', '.')}@example.com",
+            mother_occupation=student_data['mother_occ'],
+            mother_mobile=f'06{random.randint(10000000, 99999999)}',
+            mother_email=f"{student_data['mother'].lower().replace(' ', '.')}@example.com",
+            present_address=f'{random.randint(1, 200)} Main Street',
+            permanent_address=f'{random.randint(1, 200)} Oak Avenue'
+        )
+        print(f'✓ Parent created: {parent.father_name} & {parent.mother_name}')
         
-        parent = parents[i]
+        # Get user for this student
+        username = f"{student_data['first'].lower()}.{student_data['last'].lower()}@preskool.com"
+        user = User.objects.get(username=username)
         
-        student, created = Student.objects.get_or_create(
+        # Create student with parent (OneToOne)
+        student = Student.objects.create(
             user=user,
-            defaults={
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'student_id': f'STU{1000 + i:04d}',
-                'gender': random.choice(['Male', 'Female']),
-                'date_of_birth': date(2015, random.randint(1, 12), random.randint(1, 28)),
-                'student_class': random.choice(classes),
-                'joining_date': date(2023, random.randint(8, 9), random.randint(1, 15)),
-                'mobile_number': f'06{random.randint(10000000, 99999999)}',
-                'admission_number': f'ADM{2000 + i:04d}',
-                'section': random.choice(sections),
-                'parent': parent
-            }
+            first_name=student_data['first'],
+            last_name=student_data['last'],
+            student_id=f'STU{1000 + idx:04d}',
+            gender=student_data['gender'],
+            date_of_birth=date(2006, random.randint(1, 12), random.randint(1, 28)),
+            student_class=student_data['class'],
+            joining_date=date(2023, 9, 1),
+            mobile_number=f'06{random.randint(10000000, 99999999)}',
+            admission_number=f'ADM{2000 + idx:04d}',
+            section=random.choice(['A', 'B', 'C']),
+            parent=parent
         )
         students.append(student)
-        if created:
-            print(f'✓ Student created: {student.first_name} {student.last_name} (ID: {student.student_id})')
-        else:
-            print(f'✓ Student already exists: {student.first_name} {student.last_name}')
+        print(f'✓ Student created: {student.first_name} {student.last_name} (ID: {student.student_id})')
     
     return students
 
-
 def create_subjects(departments, teachers):
-    """Create subjects linked to departments and teachers"""
+    """Create subjects"""
     subjects = []
-    
     for code, name in SUBJECT_NAMES:
-        subject, created = Subject.objects.get_or_create(
+        department = next((d for d in departments if name in d.name), random.choice(departments))
+        teacher = next((t for t in teachers if t.specialization == name), random.choice(teachers))
+        
+        subject, _ = Subject.objects.get_or_create(
             code=code,
             defaults={
                 'name': name,
                 'coefficient': random.choice([1.0, 1.5, 2.0, 2.5, 3.0]),
-                'department': random.choice(departments) if departments else None,
-                'teacher': random.choice(teachers) if teachers else None,
-                'description': f'This is the {name} course, covering fundamental concepts and advanced topics.'
+                'department': department,
+                'teacher': teacher,
+                'description': f'This is the {name} course.'
             }
         )
         subjects.append(subject)
-        if created:
-            print(f'✓ Subject created: {subject.name} ({subject.code})')
-        else:
-            print(f'✓ Subject already exists: {subject.name}')
-    
+        print(f'✓ Subject created: {subject.name} ({subject.code})')
     return subjects
 
 def assign_department_heads(departments, teachers):
-    """Assign head of department for each department"""
+    """Assign department heads"""
     for i, dept in enumerate(departments):
         if i < len(teachers):
             dept.head = teachers[i]
@@ -237,17 +250,10 @@ def assign_department_heads(departments, teachers):
             print(f'✓ Department head assigned: {dept.name} -> {dept.head.first_name} {dept.head.last_name}')
 
 def print_summary():
-    """Print summary of all created data"""
+    """Print summary"""
     print("\n" + "="*50)
     print("DATABASE SUMMARY")
     print("="*50)
-    
-    print(f"\nUsers:")
-    print(f"  - Admin: {User.objects.filter(is_admin=True).count()}")
-    print(f"  - Teachers: {User.objects.filter(is_teacher=True).count()}")
-    print(f"  - Students: {User.objects.filter(is_student=True).count()}")
-    print(f"  - Total: {User.objects.count()}")
-    
     print(f"\nTeachers: {Teacher.objects.count()}")
     print(f"Students: {Student.objects.count()}")
     print(f"Parents: {Parent.objects.count()}")
@@ -257,44 +263,27 @@ def print_summary():
     print("\n" + "="*50)
     print("LOGIN CREDENTIALS")
     print("="*50)
-    print("\nAdmin Login:")
-    print("  Email: admin@preskool.com")
-    print("  Password: admin123")
-    
-    print("\nTeacher Login (any):")
-    print("  Email: teacher1@preskool.com, teacher2@preskool.com, ...")
-    print("  Password: teacher123")
-    
-    print("\nStudent Login (any):")
-    print("  Email: student1@preskool.com, student2@preskool.com, ...")
-    print("  Password: student123")
+    print("\nAdmin: admin@preskool.com / admin123")
+    print("\nTeacher (any): teacher1@preskool.com, etc. / teacher123")
+    print("\nStudent (any): nyx.night@preskool.com, etc. / student123")
     print("\n" + "="*50)
 
 def run_tests():
-    """Main function to run all tests"""
+    """Main function"""
     print("\n" + "="*50)
     print("PRE-SKOOL TEST DATA GENERATOR")
     print("="*50 + "\n")
     
-    print("Creating test data...\n")
-    
-    # Create data in correct order
     create_superuser()
     create_test_users()
     departments = create_departments()
     teachers = create_teachers(departments)
     assign_department_heads(departments, teachers)
-    parents = create_parents()
-    students = create_students(parents)
+    students = create_parents_and_students()
     subjects = create_subjects(departments, teachers)
     
-    # Print summary
     print_summary()
-    
     print("\n✓ Test data generation completed successfully!")
-    print("\nYou can now run the server:")
-    print("  python manage.py runserver")
-    print("\nAnd login with the credentials above.\n")
 
 if __name__ == '__main__':
     run_tests()

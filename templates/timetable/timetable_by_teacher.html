@@ -7,7 +7,7 @@
         <div class="page-header">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="page-title">Emploi du temps par classe</h3>
+                    <h3 class="page-title">Emploi du temps par enseignant</h3>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'student_list' %}">Dashboard</a></li>
                         <li class="breadcrumb-item active">Emploi du temps</li>
@@ -27,16 +27,16 @@
             <div class="col-md-3">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title">Classes</h5>
+                        <h5 class="card-title">Enseignants</h5>
                     </div>
                     <div class="card-body">
                         <div class="list-group">
-                            <a href="{% url 'timetable_by_class' %}" class="list-group-item list-group-item-action {% if not selected_class %}active{% endif %}">
-                                Toutes les classes
+                            <a href="{% url 'timetable_by_teacher' %}" class="list-group-item list-group-item-action {% if not selected_teacher %}active{% endif %}">
+                                Tous les enseignants
                             </a>
-                            {% for class_item in classes %}
-                            <a href="#" class="list-group-item list-group-item-action">
-                                {{ class_item }}
+                            {% for teacher in teachers %}
+                            <a href="{% url 'timetable_by_teacher' teacher.id %}" class="list-group-item list-group-item-action {% if selected_teacher.id == teacher.id %}active{% endif %}">
+                                {{ teacher.first_name }} {{ teacher.last_name }}
                             </a>
                             {% endfor %}
                         </div>
@@ -48,10 +48,10 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">
-                            {% if selected_class %}
-                                Emploi du temps - {{ selected_class.student_class }}
+                            {% if selected_teacher %}
+                                Emploi du temps - {{ selected_teacher.first_name }} {{ selected_teacher.last_name }}
                             {% else %}
-                                Emploi du temps
+                                Emploi du temps - Tous les enseignants
                             {% endif %}
                         </h5>
                     </div>
@@ -62,7 +62,7 @@
                                     <tr>
                                         <th>Jour</th>
                                         <th>Matière</th>
-                                        <th>Enseignant</th>
+                                        <th>Classe</th>
                                         <th>Horaire</th>
                                         <th>Salle</th>
                                         {% if user.is_admin or user.is_teacher %}
@@ -82,17 +82,13 @@
                                             {% endif %}
                                         </td>
                                         <td>{{ entry.subject.name }}</td>
-                                        <td>{{ entry.teacher.first_name }} {{ entry.teacher.last_name }}</td>
+                                        <td>{{ entry.student_class.student_class }} - Section {{ entry.student_class.section }}</td>
                                         <td>{{ entry.start_time|time:"H:i" }} - {{ entry.end_time|time:"H:i" }}</td>
                                         <td>{{ entry.room }}</td>
                                         {% if user.is_admin or user.is_teacher %}
                                         <td>
-                                            <a href="{% url 'edit_timetable' entry.id %}" class="btn btn-sm btn-warning" title="Modifier">
-                                                <i class="fas fa-edit"></i> Modifier
-                                            </a>
-                                            <a href="{% url 'delete_timetable' entry.id %}" class="btn btn-sm btn-danger" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce cours ?');">
-                                                <i class="fas fa-trash"></i> Supprimer
-                                            </a>
+                                            <a href="{% url 'edit_timetable' entry.id %}" class="btn btn-sm btn-warning">Modifier</a>
+                                            <a href="{% url 'delete_timetable' entry.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ce cours ?')">Supprimer</a>
                                         </td>
                                         {% endif %}
                                     </tr>
